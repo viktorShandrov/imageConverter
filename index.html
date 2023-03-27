@@ -1,14 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+	<title>Image Converter</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+		}
+
+		h1 {
+			text-align: center;
+		}
+
+		form {
+			margin: 20px;
+		}
+
+		select {
+			margin-left: 10px;
+		}
+
+		#output-container {
+			margin: 20px;
+		}
+
+		img {
+			max-width: 100%;
+		}
+	</style>
 </head>
 <body>
-    <h1>Hello</h1>
-    <h1>Hello</h1>
-    <h1>Hello</h1>
+	<h1>Image Converter</h1>
+	<form id="image-form" enctype="multipart/form-data">
+		<input type="file" name="image" id="image-input">
+		<select name="conversion" id="conversion-select">
+			<option value="png">PNG</option>
+		</select>
+		<button type="submit" id="convert-btn">Convert</button>
+	</form>
+	<div id="output-container"></div>
+	<script>
+		const imageForm = document.getElementById('image-form');
+		const imageInput = document.getElementById('image-input');
+		const conversionSelect = document.getElementById('conversion-select');
+		const convertBtn = document.getElementById('convert-btn');
+		const outputContainer = document.getElementById('output-container');
+
+		imageForm.addEventListener('submit', (event) => {
+			event.preventDefault();
+			const file = imageInput.files[0];
+			const conversion = conversionSelect.value;
+			if (file) {
+				const reader = new FileReader();
+				reader.readAsDataURL(file);
+				reader.onload = () => {
+					const image = new Image();
+					image.src = reader.result;
+					image.onload = () => {
+						const canvas = document.createElement('canvas');
+						const ctx = canvas.getContext('2d');
+						canvas.width = image.width;
+						canvas.height = image.height;
+						ctx.drawImage(image, 0, 0);
+						const pngData = canvas.toDataURL('image/png');
+						const outputImage = document.createElement('img');
+						outputImage.src = pngData;
+						outputContainer.innerHTML = '';
+						outputContainer.appendChild(outputImage);
+					};
+				};
+			}
+		});
+	</script>
 </body>
 </html>

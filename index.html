@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+	
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5339755192099641"
+     crossorigin="anonymous"></script>
 	<title>Image Converter</title>
 	<style>
 		.container {
@@ -98,13 +101,6 @@
 		<h1>Image Converter</h1>
 		<div class="form-group">
             <input type="file" id="input-image" accept="image/*">
-			<label>Input Format:</label>
-			<select id="input-format">
-				<option value="jpeg">JPEG</option>
-				<option value="png">PNG</option>
-				<option value="gif">GIF</option>
-				<option value="bmp">BMP</option>
-			</select>
 		</div>
 		<div class="form-group">
 			<label>Output Format:</label>
@@ -134,64 +130,84 @@
 			convertBtn.disabled=false;
 		})
         
-        function convertImage() {
-            const inputFormat = document.getElementById('input-format').value;
-            const outputFormat = document.getElementById('output-format').value;
-            const inputImage = document.getElementById('input-image').files[0];
-  
-  			const canvas = document.createElement('canvas');
-  			const ctx = canvas.getContext('2d');
+        
+    function convertImage() {
+    const outputFormat = document.getElementById('output-format').value;
+    const inputImage = document.getElementById('input-image').files[0];
 
-			if(inputImage){
-				const img = new Image();
-				img.onload = function() {
-				  canvas.width = img.width;
-				  canvas.height = img.height;
-				  ctx.drawImage(img, 0, 0);
-				  downloadBtn.disabled=true;
-				  canvas.toBlob(function(blob) {
-					  const newFile = new File([blob], 'converted.' + outputFormat, { type: 'image/' + outputFormat });
-					let i = 0;
-				   const interval = setInterval(()=>{
-					  i+=1;
-					  updateProgressBar(i) 
-					  if(i===100){
-						  clearInterval(interval);
-						  downloadBtn.addEventListener("click",downloadFile)
-						  downloadBtn.disabled=false;
-							function downloadFile() {
-								updateProgressBar(0);
-								hideProgressBar();
-							  const url = URL.createObjectURL(newFile);
-							  const a = document.createElement('a');
-							  a.href = url;
-							  a.download = newFile.name;
-							  document.body.appendChild(a);
-							  a.click();
-							  setTimeout(function() {
-								  document.body.removeChild(a);
-								  window.URL.revokeObjectURL(url);  
-							  }, 0);
-						  }   
-				  }} ,40)
-				  }
-			  , 'image/' + outputFormat);
-			  }
-				img.src = URL.createObjectURL(inputImage);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
 
-			}else{
-				convertBtn.style.display="none";
-			}
-  
+    if (inputImage) {
+        const img = new Image();
+        img.onload = function() {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            downloadBtn.disabled = true;
+            canvas.toBlob(function(blob) {
+                const newFile = new File([blob], 'converted.' + outputFormat, { type: 'image/' + outputFormat });
+                let i = 0;
+                const interval = setInterval(() => {
+                    i += 1;
+                    updateProgressBar(i);
+                    if (i === 100) {
+                        clearInterval(interval);
+                        downloadBtn.disabled = false;
+                    }
+                }, 40);
+            }, 'image/' + outputFormat);
+        };
+        img.src = URL.createObjectURL(inputImage);
+    } else {
+        convertBtn.style.display = "none";
+    }
 }
 
 function hideProgressBar() {
-  progressBar.style.width = '0%';
+    progressBar.style.width = '0%';
 }
 
 function updateProgressBar(progress) {
-  progressBar.style.width = progress + '%';
+    progressBar.style.width = progress + '%';
 }
+
+function downloadFile(newFile) {
+    updateProgressBar(0);
+    hideProgressBar();
+    const url = URL.createObjectURL(newFile);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = newFile.name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 0);
+}
+
+downloadBtn.addEventListener("click", function() {
+    const outputFormat = document.getElementById('output-format').value;
+    const inputImage = document.getElementById('input-image').files[0];
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (inputImage) {
+        const img = new Image();
+        img.onload = function() {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            canvas.toBlob(function(blob) {
+                const newFile = new File([blob], 'converted.' + outputFormat, { type: 'image/' + outputFormat });
+                downloadFile(newFile);
+            }, 'image/' + outputFormat);
+        };
+        img.src = URL.createObjectURL(inputImage);
+    }
+});
+
 
 
 const convertButton = document.getElementById('convert-btn');
@@ -199,42 +215,13 @@ convertButton.addEventListener('click', function() {
   convertImage();
 });
 
-const inputFormatSelect = document.getElementById('input-format');
 const outputFormatSelect = document.getElementById('output-format');
 
-inputFormatSelect.addEventListener('change', function() {
-
-	downloadBtn.disabled=true;
-	updateProgressBar(0);
-	hideProgressBar();
-//   const inputOption = inputFormatSelect.options[inputFormatSelect.selectedIndex].value;
-//   const outputOption = outputFormatSelect.options[outputFormatSelect.selectedIndex].value;
-  
-//   const inputAccept = 'image/' + inputOption;
-//   const outputAccept = 'image/' + outputOption;
-  
-//   const inputImage = document.getElementById('input-image');
-//   inputImage.setAttribute('accept', inputAccept);
-  
-//   const outputImage = document.getElementById('output-image');
-//   outputImage.setAttribute('accept', outputAccept);
-});
 
 outputFormatSelect.addEventListener('change', function() {
 	downloadBtn.disabled=true;
 	updateProgressBar(0);
 	hideProgressBar();
-//   const inputOption = inputFormatSelect.options[inputFormatSelect.selectedIndex].value;
-//   const outputOption = outputFormatSelect.options[outputFormatSelect.selectedIndex].value;
-  
-//   const inputAccept = 'image/' + inputOption;
-//   const outputAccept = 'image/' + outputOption;
-  
-//   const inputImage = document.getElementById('input-image');
-//   inputImage.setAttribute('accept', inputAccept);
-  
-//   const outputImage = document.getElementById('output-image');
-//   outputImage.setAttribute('accept', outputAccept);
 });
 
 	</script>
